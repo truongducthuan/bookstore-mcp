@@ -96,6 +96,13 @@ npm run build:server
 npm run build
 ```
 
+- Or if error run
+
+```bash
+chmod +x fix-widgets.sh
+./fix-widgets.sh
+```
+
 **Expected output:**
 
 ```

@@ -5,7 +5,7 @@ import {
   startOpenAIWidgetHttpServer 
 } from '@fractal-mcp/oai-server';
 import { z } from 'zod';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import * as db from './database.js';
@@ -14,16 +14,82 @@ import type { BookListProps, BookDetailProps, CartProps, OrderHistoryProps } fro
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PORT = parseInt(process.env.PORT || '8000');
 const DEFAULT_USER = 'user-chatgpt'; // Single user for demo
+const PROJECT_ROOT = join(__dirname, '..', '..');
 
 // Read bundled widget HTML files
 function readWidgetHTML(widgetName: string): string {
-  try {
-    const htmlPath = join(__dirname, '..', 'ui', widgetName, 'index.html');
-    return readFileSync(htmlPath, 'utf-8');
-  } catch (error) {
-    console.warn(`Widget ${widgetName} not found, using placeholder`);
-    return `<div>Widget ${widgetName} - Build UI first: npm run build:ui</div>`;
+  // Absolute path from project root
+  const widgetPath = join(PROJECT_ROOT, 'dist', 'ui', widgetName, 'index.html');
+  
+  console.log(`\n[Widget] Loading: ${widgetName}`);
+  console.log(`[Widget] Path: ${widgetPath}`);
+  console.log(`[Widget] Exists: ${existsSync(widgetPath)}`);
+
+  if (existsSync(widgetPath)) {
+    try {
+      const html = readFileSync(widgetPath, 'utf-8');
+      console.log(`✅ Loaded successfully (${html.length} bytes)\n`);
+      return html;
+    } catch (error) {
+      console.error(`❌ Error reading file:`, error);
+    }
   }
+
+  console.warn(`⚠️  Widget not found, using placeholder\n`);
+  return createPlaceholderWidget(widgetName);
+}
+
+// Create placeholder widget for development
+function createPlaceholderWidget(widgetName: string): string {
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 { color: #667eea; margin-bottom: 16px; }
+    p { color: #6b7280; line-height: 1.6; margin-bottom: 12px; }
+    code {
+      background: #f3f4f6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .emoji { font-size: 48px; margin-bottom: 16px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="emoji">🎨</div>
+    <h1>Widget: ${widgetName}</h1>
+    <p><strong>Status:</strong> Widget HTML not found</p>
+    <p>Build the widgets first:</p>
+    <p><code>npm run build:ui</code></p>
+    <p style="margin-top: 24px; font-size: 14px; color: #9ca3af;">
+      The server is working! Once you build the UI, this placeholder will be replaced with the actual widget.
+    </p>
+  </div>
+</body>
+</html>`;
 }
 
 // Create MCP Server
@@ -160,7 +226,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/add-cart.html',
       invoking: '🛒 Đang thêm vào giỏ...',
       invoked: '✅ Đã thêm vào giỏ hàng!',
-      html: readWidgetHTML('cart'),
+      html: readWidgetHTML('add-cart'),
       responseText: 'Sách đã được thêm vào giỏ hàng',
       inputSchema: z.object({
         bookId: z.string().describe('ID của sách'),

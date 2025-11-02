@@ -6,11 +6,16 @@
   "type": "module",
   "scripts": {
     "build": "npm run build:ui && npm run build:server",
-    "build:ui": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookListWidget.tsx --out=./dist/ui/book-list && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookDetailWidget.tsx --out=./dist/ui/book-detail && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/CartWidget.tsx --out=./dist/ui/cart && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/OrderHistoryWidget.tsx --out=./dist/ui/order-history",
+    "build:ui": "npm run build:ui:list && npm run build:ui:detail && npm run build:ui:cart && npm run build:ui:orders",
+    "build:ui:list": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookListWidget.tsx --out=./dist/ui/book-list",
+    "build:ui:detail": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookDetailWidget.tsx --out=./dist/ui/book-detail",
+    "build:ui:cart": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/CartWidget.tsx --out=./dist/ui/cart",
+    "build:ui:orders": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/OrderHistoryWidget.tsx --out=./dist/ui/order-history",
     "build:server": "tsc",
     "start": "node dist/server/index.js",
     "dev": "npm run build && npm start",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "node dist/server/index.js"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -21,7 +26,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@fractal-mcp/cli": "latest",
+    "@fractal-mcp/cli": "^2.2.5",
     "@types/node": "^20.10.0",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
