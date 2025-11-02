@@ -37,6 +37,14 @@ export default function BookDetailWidget() {
   const isDark = theme === 'dark';
 
   const styles = {
+    root: {
+      width: '100%',
+      height: '100vh', // Giới hạn chiều cao
+      maxHeight: '100vh',
+      overflow: 'hidden', // Ngăn scroll ở root
+      display: 'flex',
+      flexDirection: 'column' as const
+    },
     container: {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       background: isDark ? '#1a1a1a' : '#fff',
@@ -189,6 +197,7 @@ export default function BookDetailWidget() {
   };
 
   return (
+    <div style={styles.root}>
     <div style={styles.container}>
       <div style={styles.main}>
         <div style={styles.grid}>
@@ -297,6 +306,7 @@ export default function BookDetailWidget() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
