@@ -16,6 +16,12 @@ const PORT = parseInt(process.env.PORT || '8000');
 const DEFAULT_USER = 'user-chatgpt'; // Single user for demo
 const PROJECT_ROOT = join(__dirname, '..', '..');
 
+console.log('\n🔍 DEBUG Path Resolution:');
+console.log('__dirname:', __dirname);
+console.log('PROJECT_ROOT:', PROJECT_ROOT);
+console.log('Expected widget path:', join(PROJECT_ROOT, 'dist', 'ui', 'book-list', 'index.html'));
+console.log('');
+
 // Read bundled widget HTML files
 function readWidgetHTML(widgetName: string): string {
   // Absolute path from project root
@@ -92,6 +98,23 @@ function createPlaceholderWidget(widgetName: string): string {
 </html>`;
 }
 
+console.log('🎨 PRE-LOADING ALL WIDGETS...\n');
+
+const WIDGET_HTMLS = {
+  'book-list': readWidgetHTML('book-list'),
+  'book-detail': readWidgetHTML('book-detail'),
+  'cart': readWidgetHTML('cart'),
+  'add-cart': readWidgetHTML('cart'),
+  'order-history': readWidgetHTML('order-history')
+};
+
+console.log('📊 WIDGET LOADING SUMMARY:');
+Object.entries(WIDGET_HTMLS).forEach(([name, html]) => {
+  const isPlaceholder = html.includes('Widget HTML not found');
+  console.log(`  ${isPlaceholder ? '⚠️' : '✅'} ${name}: ${html.length} bytes ${isPlaceholder ? '(placeholder)' : ''}`);
+});
+console.log('\n');
+
 // Create MCP Server
 function createServer(): McpServer {
   const server = new McpServer({
@@ -109,7 +132,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/book-list.html',
       invoking: '🔍 Đang tìm kiếm sách...',
       invoked: '📚 Tìm thấy sách!',
-      html: readWidgetHTML('book-list'),
+      html: WIDGET_HTMLS['book-list'],
       responseText: 'Đây là kết quả tìm kiếm sách',
       inputSchema: z.object({
         query: z.string().optional().describe('Từ khóa tìm kiếm (title, author, category)'),
@@ -171,7 +194,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/book-detail.html',
       invoking: '📖 Đang tải thông tin sách...',
       invoked: '✅ Đã tải xong!',
-      html: readWidgetHTML('book-detail'),
+      html: WIDGET_HTMLS['book-detail'],
       responseText: 'Thông tin chi tiết sách',
       inputSchema: z.object({
         bookId: z.string().describe('ID của sách')
@@ -226,7 +249,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/add-cart.html',
       invoking: '🛒 Đang thêm vào giỏ...',
       invoked: '✅ Đã thêm vào giỏ hàng!',
-      html: readWidgetHTML('add-cart'),
+      html: WIDGET_HTMLS['add-cart'],
       responseText: 'Sách đã được thêm vào giỏ hàng',
       inputSchema: z.object({
         bookId: z.string().describe('ID của sách'),
@@ -294,7 +317,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/cart.html',
       invoking: '🛒 Đang tải giỏ hàng...',
       invoked: '✅ Giỏ hàng của bạn',
-      html: readWidgetHTML('cart'),
+      html: WIDGET_HTMLS['cart'],
       responseText: 'Giỏ hàng hiện tại',
       inputSchema: z.object({})
     },
@@ -354,7 +377,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/checkout.html',
       invoking: '💳 Đang xử lý thanh toán...',
       invoked: '✅ Đặt hàng thành công!',
-      html: readWidgetHTML('order-history'),
+      html: WIDGET_HTMLS['order-history'],
       responseText: 'Đơn hàng đã được tạo thành công',
       inputSchema: z.object({})
     },
@@ -408,7 +431,7 @@ function createServer(): McpServer {
       templateUri: 'ui://widget/order-history.html',
       invoking: '📜 Đang tải lịch sử...',
       invoked: '✅ Lịch sử đơn hàng',
-      html: readWidgetHTML('order-history'),
+      html: WIDGET_HTMLS['order-history'],
       responseText: 'Lịch sử đơn hàng của bạn',
       inputSchema: z.object({})
     },
