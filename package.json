@@ -1,0 +1,43 @@
+{
+  "name": "bookstore-mcp",
+  "version": "1.0.0",
+  "description": "BookStore MCP Server with Interactive Widgets for ChatGPT",
+  "main": "dist/server/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:ui && npm run build:server",
+    "build:ui": "npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookListWidget.tsx --out=./dist/ui/book-list && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/BookDetailWidget.tsx --out=./dist/ui/book-detail && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/CartWidget.tsx --out=./dist/ui/cart && npx @fractal-mcp/cli bundle --entrypoint=./src/ui/OrderHistoryWidget.tsx --out=./dist/ui/order-history",
+    "build:server": "tsc",
+    "start": "node dist/server/index.js",
+    "dev": "npm run build && npm start",
+    "clean": "rm -rf dist"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@fractal-mcp/oai-hooks": "latest",
+    "@fractal-mcp/oai-server": "latest",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@fractal-mcp/cli": "latest",
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "bookstore",
+    "chatgpt",
+    "openai",
+    "fractal",
+    "widget"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
